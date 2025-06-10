@@ -85,12 +85,13 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
     private void SpawnVotingBuddiesForSimulation()
     {
-        List<CandidateData> candidates = new();
+        List<CandidateData> candidates;
 
         // allocate the necessary voting buddies
         for (int i = 0; i < votingBuddyCoint; ++i)
         {
             // TODO: HORRIBLY INEFFICIENT!!, JUST FOR QUICK TEST!
+            candidates = new();
             foreach (var candidateCenters in CandidateCenters)
             {
                 candidates.Add(candidateCenters.CandidateData);
@@ -135,9 +136,12 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
     private void RevealCurrentVotes()
     {
-        foreach (var votingBuddyDataHolder in activeVotingBuddies)
+        foreach (var votingBuddy in activeVotingBuddies)
         {
-            var data = votingBuddyDataHolder.Data;
+            if(!votingBuddy.needsToMoveToNextCandidate)
+                continue;
+            
+            var data = votingBuddy.Data;
 
             var currentChoice = data.GetCurrentChoice();
 
@@ -147,10 +151,11 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
             if (nextCandidateCenter != null)
             {
                 //center.AssignBuddy
-
+                nextCandidateCenter.AssignBuddy(votingBuddy);
+                
                 // Set the color of the VotingBuddy
-                //var renderer = newVotingBuddy.GetComponent<MeshRenderer>();
-                //renderer.material.color = color;
+                votingBuddy.gameObject.GetComponent<MeshRenderer>().material.color = 
+                    currentChoice.candidateColor;
             }
         }
     }
@@ -159,18 +164,31 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
     {
         foreach (var votingChoiceCenter in CandidateCenters)
         {
-            // get the center with the least amount of votes
+            var assignedBuddies = votingChoiceCenter.assignedBuddies;
+            foreach (var votingBuddy in assignedBuddies)
+            {
+                votingBuddyMover.RegisterMovement(
+                    votingBuddy,
+                    votingChoiceCenter.GetRandomPositionForVotingBuddy());
+            }
         }
-
-        // Move 
-        //buddyMover.RegisterMovement(buddy, center.BuddyArea.position);
     }
 
     private VotingCandidateCenter GetMajorityCandidate()
     {
+        int numberToBeat;
+        if (votingBuddyCoint % 2 == 0) // even
+        {
+            numberToBeat = votingBuddyCoint / 2;
+        }
+        else // odd
+        {
+            numberToBeat = (votingBuddyCoint / 2) + 1;
+        }
+        
         foreach (var votingCandidateCenter in CandidateCenters)
         {
-            if (votingCandidateCenter.VoteCount > (votingBuddyCoint / 2))
+            if (votingCandidateCenter.VoteCount > numberToBeat)
                 return votingCandidateCenter;
         }
         return null;
@@ -184,7 +202,25 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
     private void EliminateLowestCandidate()
     {
-        // change eliminated candidate to eliminated status
+        //find candidate with lowest amount of votes...
+        VotingCandidateCenter votingCandidateWithLowestPoints = CandidateCenters[0];
+        for (int i = 1; i < CandidateCenters.Count; ++i)
+        {
+            var candidate = CandidateCenters[i];
+
+            if (candidate.assignedBuddies.Count < votingCandidateWithLowestPoints.assignedBuddies.Count)
+            {
+                votingCandidateWithLowestPoints = candidate;
+            }
+        }
+
+        // assign buddies of this candidate to the next choice...
+        foreach (var votingBuddy in votingCandidateWithLowestPoints.assignedBuddies)
+        {
+            votingBuddy.Data.AdvanceToNextChoice();
+            votingBuddy.needsToMoveToNextCandidate = true;
+        }
+        votingCandidateWithLowestPoints.ClearAssignments();
     }
 
     public void DisplayResults()

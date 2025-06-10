@@ -7,9 +7,9 @@ public class VotingBuddyMover : MonoBehaviour
     [Range(1f, 10f)]
     private float moveSpeed = 3f;
 
-    private List<(Transform buddy, Vector3 target)> movements = new();
+    private readonly List<(VotingBuddyDataHolder buddy, Vector3 target)> movements = new();
 
-    public void RegisterMovement(Transform buddy, Vector3 target)
+    public void RegisterMovement(VotingBuddyDataHolder buddy, Vector3 target)
     {
         movements.Add((buddy, target));
     }
@@ -20,13 +20,16 @@ public class VotingBuddyMover : MonoBehaviour
         {
             var (buddy, target) = movements[i];
 
-            buddy.position = Vector3.MoveTowards(
-                buddy.position,
+            buddy.transform.position = Vector3.MoveTowards(
+                buddy.transform.position,
                 target,
                 Time.deltaTime * moveSpeed);
 
-            if (Vector3.Distance(buddy.position, target) <= 0.01f)
+            if (Vector3.Distance(buddy.transform.position, target) <= 0.01f)
+            {
+                buddy.needsToMoveToNextCandidate = false;
                 movements.RemoveAt(i--);
+            }
         }
     }
 

@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 
+[Serializable]
 public class VotingBuddyData
 {
     public List<CandidateData> RankedChoices = new();
-    public int CurrentRoundIndex = 0;
+    private int CurrentRoundIndex = 0;
 
     public CandidateData GetCurrentChoice()
     {

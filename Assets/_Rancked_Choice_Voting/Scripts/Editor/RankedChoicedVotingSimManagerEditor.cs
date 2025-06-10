@@ -41,7 +41,10 @@ public class RankedChoicedVotingSimManagerEditor : Editor
                         candidateColor = Random.ColorHSV(),
                         candidateName = $"Random Candidate_{Random.Range(0, 100)}"
                     };
-
+                    
+                    Debug.Log(
+                        $"Spawning new candidate with name: {newCandidate.candidateName} and color: {newCandidate.candidateColor}");
+                    
                     manager.AddCandidateCenter(randomPosition, newCandidate);
                 }
                 else
@@ -53,6 +56,14 @@ public class RankedChoicedVotingSimManagerEditor : Editor
             {
                 Debug.LogWarning("Plane object not found in the scene.");
             }
+        }
+        
+        // Add a button to spawn a voting choice center at a random position
+        if (GUILayout.Button("Start simulation!"))
+        {
+            var manager = (RankedChoicedVotingSimManager)target;
+            
+            manager.StartSimulation();
         }
     }
 }

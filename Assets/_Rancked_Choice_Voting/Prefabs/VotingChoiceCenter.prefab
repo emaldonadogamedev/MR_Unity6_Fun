@@ -43,7 +43,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1690012779592787152}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 966bb238f0fc6bd42885c1e7070e220b, type: 3}
+  m_Script: {fileID: 11500000, guid: 512aa4abb9114b2428a86f01ac3b492c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VotingChoiceCenter
   visualsMeshRenderer: {fileID: 3086440276097643486}

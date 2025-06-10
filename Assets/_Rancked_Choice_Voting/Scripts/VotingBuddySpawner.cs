@@ -50,11 +50,11 @@ public class VotingBuddySpawner : MonoBehaviour
         GameObject newVotingBuddy = votingBuddyPool.Get();
         newVotingBuddy.transform.position = position;
 
-        var votingBuddyDataHolder = 
+        var votingBuddyDataHolder =
             newVotingBuddy.GetComponent<VotingBuddyDataHolder>();
-
+        
         votingBuddyDataHolder.Data = data;
-
+        
         return votingBuddyDataHolder;
     }
 
