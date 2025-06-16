@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
 
 public class RankedChoicedVotingSimManager : MonoBehaviour
@@ -19,8 +18,6 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
     [Range(50, 1000)]
     private int votingBuddyCoint = 300;
 
-    public int VotingBuddyCoint => votingBuddyCoint;
-
     [SerializeField]
     private VotingChoiceCenterSpawner votingChoiceCenterSpawner;
 
@@ -30,9 +27,9 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
     [SerializeField]
     private VotingBuddyMover votingBuddyMover;
 
-    public List<VotingCandidateCenter> CandidateCenters { get; private set; } = new();
+    private List<VotingCandidateCenter> CandidateCenters = new();
 
-    public List<VotingBuddyDataHolder> activeVotingBuddies { get; private set; } = new();
+    private List<VotingBuddyDataHolder> activeVotingBuddies = new();
 
     private int currentRoundNumber = 1;
 
@@ -110,6 +107,8 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
     {
         while (true)
         {
+            Debug.Log($"Starting simulation round {currentRoundNumber}!");
+            
             RevealCurrentVotes();
 
             MoveVotingBuddies();
@@ -117,16 +116,16 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
             yield return new WaitUntil(votingBuddyMover.AllArrived);
 
             yield return new WaitForSeconds(0.5f);
-
-            var winner = GetMajorityCandidate();
-            if (winner != null)
+            
+            if (TryGetMajorityCandidate(out var winner))
             {
-                Debug.Log($"Winner is {winner.CandidateData.candidateName}!");
+                Debug.Log(
+                    $"Winner is {winner.CandidateData.candidateName} with {winner.VoteCount} votes!");
 
                 break;
             }
 
-            EliminateLowestCandidate();
+            LowestCandidateChangeVotesToNextChoice();
 
             currentRoundNumber++;
         }
@@ -150,13 +149,18 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
             if (nextCandidateCenter != null)
             {
-                //center.AssignBuddy
                 nextCandidateCenter.AssignBuddy(votingBuddy);
                 
                 // Set the color of the VotingBuddy
                 votingBuddy.gameObject.GetComponent<MeshRenderer>().material.color = 
                     currentChoice.candidateColor;
             }
+        }
+        
+        foreach (var candidateCenter in CandidateCenters)
+        {
+            Debug.Log(
+                $"Candidate {candidateCenter.CandidateData.candidateName} has {candidateCenter.VoteCount} votes.");
         }
     }
 
@@ -167,6 +171,9 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
             var assignedBuddies = votingChoiceCenter.assignedBuddies;
             foreach (var votingBuddy in assignedBuddies)
             {
+                if(!votingBuddy.needsToMoveToNextCandidate)
+                    continue;
+                
                 votingBuddyMover.RegisterMovement(
                     votingBuddy,
                     votingChoiceCenter.GetRandomPositionForVotingBuddy());
@@ -174,40 +181,31 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
         }
     }
 
-    private VotingCandidateCenter GetMajorityCandidate()
+    private bool TryGetMajorityCandidate(out VotingCandidateCenter votingCandidateCenter)
     {
-        int numberToBeat;
-        if (votingBuddyCoint % 2 == 0) // even
+        int numberToBeat = votingBuddyCoint / 2;
+
+        votingCandidateCenter = null;
+        
+        foreach (var candidateCenter in CandidateCenters)
         {
-            numberToBeat = votingBuddyCoint / 2;
-        }
-        else // odd
-        {
-            numberToBeat = (votingBuddyCoint / 2) + 1;
+            if (candidateCenter.VoteCount > numberToBeat)
+                votingCandidateCenter = candidateCenter;
         }
         
-        foreach (var votingCandidateCenter in CandidateCenters)
-        {
-            if (votingCandidateCenter.VoteCount > numberToBeat)
-                return votingCandidateCenter;
-        }
-        return null;
+        return votingCandidateCenter != null;
     }
 
-    public VotingCandidateCenter GetCenterForCandidate(CandidateData candidate)
+    private void LowestCandidateChangeVotesToNextChoice()
     {
-        return CandidateCenters.Find(center =>
-            center.CandidateData == candidate);
-    }
-
-    private void EliminateLowestCandidate()
-    {
-        //find candidate with lowest amount of votes...
-        VotingCandidateCenter votingCandidateWithLowestPoints = CandidateCenters[0];
-        for (int i = 1; i < CandidateCenters.Count; ++i)
+        var participatingCandidateCenters = CandidateCenters.FindAll(center => center.VoteCount > 0);
+        
+        // Find the candidate with the lowest amount of votes...
+        var votingCandidateWithLowestPoints = participatingCandidateCenters[0];
+        for (int i = 1; i < participatingCandidateCenters.Count; ++i)
         {
-            var candidate = CandidateCenters[i];
-
+            var candidate = participatingCandidateCenters[i];
+            
             if (candidate.assignedBuddies.Count < votingCandidateWithLowestPoints.assignedBuddies.Count)
             {
                 votingCandidateWithLowestPoints = candidate;
@@ -220,12 +218,15 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
             votingBuddy.Data.AdvanceToNextChoice();
             votingBuddy.needsToMoveToNextCandidate = true;
         }
+        Debug.Log(
+            $"Candidate {votingCandidateWithLowestPoints.CandidateData.candidateName} has been eliminated!");
+        
         votingCandidateWithLowestPoints.ClearAssignments();
     }
 
-    public void DisplayResults()
+    private void DisplayResults()
     {
-        Debug.Log("Simulation complete. Displaying results...");
+        Debug.Log($"Simulation complete after {currentRoundNumber} rounds. Displaying results...");
 
         CurrentState = SimulationState.DisplayingResults;
 

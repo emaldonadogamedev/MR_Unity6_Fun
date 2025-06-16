@@ -695,6 +695,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: VotingChoiceCenter
       objectReference: {fileID: 0}
+    - target: {fileID: 3346214456432505871, guid: 1cc618a647425444eb93e5456acf0f8e, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 1859395175}
     - target: {fileID: 7985437333046945486, guid: 1cc618a647425444eb93e5456acf0f8e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
