@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using TreeEditor;
 using UnityEngine;
 
 public class VotingCandidateCenter : MonoBehaviour
@@ -11,7 +10,7 @@ public class VotingCandidateCenter : MonoBehaviour
 
     public int VoteCount => assignedBuddies.Count;
 
-    public List<VotingBuddyDataHolder> assignedBuddies { get; private set; } = new();
+    public List<VotingBuddyBallotHolder> assignedBuddies { get; private set; } = new();
 
     public void Initialize(CandidateData candidate)
     {
@@ -20,7 +19,7 @@ public class VotingCandidateCenter : MonoBehaviour
         visualsMeshRenderer.material.color = candidate.candidateColor;
     }
 
-    public void AssignBuddy(VotingBuddyDataHolder buddy)
+    public void AssignBuddy(VotingBuddyBallotHolder buddy)
     {
         assignedBuddies.Add(buddy);
     }

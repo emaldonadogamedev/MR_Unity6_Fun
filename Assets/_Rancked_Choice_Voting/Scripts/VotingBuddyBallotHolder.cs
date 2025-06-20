@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class VotingBuddyDataHolder : MonoBehaviour
+public class VotingBuddyBallotHolder : MonoBehaviour
 {
-    public VotingBuddyData Data;
+    public VotingBuddyBallot Ballot;
 
     [HideInInspector]
     public bool needsToMoveToNextCandidate = true;

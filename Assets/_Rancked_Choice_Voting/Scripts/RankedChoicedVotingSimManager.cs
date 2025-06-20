@@ -12,6 +12,12 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
         DisplayingResults
     }
 
+    class CandidateSimulationData
+    {
+        public VotingCandidateCenter votingCandidateCenter;
+        public bool isEliminated = false;
+    }
+
     public SimulationState CurrentState { get; private set; } = SimulationState.Idle;
 
     [SerializeField]
@@ -27,9 +33,9 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
     [SerializeField]
     private VotingBuddyMover votingBuddyMover;
 
-    private List<VotingCandidateCenter> CandidateCenters = new();
+    private List<CandidateSimulationData> candidateCenters = new();
 
-    private List<VotingBuddyDataHolder> activeVotingBuddies = new();
+    private List<VotingBuddyBallotHolder> activeVotingBuddies = new();
 
     private int currentRoundNumber = 1;
 
@@ -40,12 +46,17 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                 position,
                 candidate);
 
-        CandidateCenters.Add(newVotingChoiceCenter);
+        candidateCenters.Add(
+            new CandidateSimulationData()
+            {
+                isEliminated = false,
+                votingCandidateCenter = newVotingChoiceCenter
+            });
     }
 
     public void StartSimulation()
     {
-        if (CandidateCenters.Count < 2)
+        if (candidateCenters.Count < 2)
         {
             Debug.LogWarning(
                 "At least two candidates are required to start the simulation.");
@@ -63,9 +74,10 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
     private void ResetSimulationData()
     {
-        foreach (var center in CandidateCenters)
+        foreach (var center in candidateCenters)
         {
-            center.ClearAssignments();
+            center.isEliminated = false;
+            center.votingCandidateCenter.ClearAssignments();
         }
 
         //TODO: HORRIBLY INEFFICIENT!
@@ -89,9 +101,9 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
         {
             // TODO: HORRIBLY INEFFICIENT!!, JUST FOR QUICK TEST!
             candidates = new();
-            foreach (var candidateCenters in CandidateCenters)
+            foreach (var candidateCenters in candidateCenters)
             {
-                candidates.Add(candidateCenters.CandidateData);
+                candidates.Add(candidateCenters.votingCandidateCenter.CandidateData);
             }
 
             var newVotingBuddyData =
@@ -125,7 +137,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                 break;
             }
 
-            LowestCandidateChangeVotesToNextChoice();
+            EliminateCandidateWithLowestVotes();
 
             currentRoundNumber++;
         }
@@ -140,45 +152,86 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
             if(!votingBuddy.needsToMoveToNextCandidate)
                 continue;
             
-            var data = votingBuddy.Data;
+            var ballot = votingBuddy.Ballot;
 
-            var currentChoice = data.GetCurrentChoice();
+            if(ballot.isExhausted)
+            {
+                // Set the color of the VotingBuddy
+                votingBuddy.gameObject.GetComponent<MeshRenderer>().material.color =
+                    new Color(.5f, .5f, .5f, 0.5f);
 
-            var nextCandidateCenter = CandidateCenters.Find(
-                candidateCenter => candidateCenter.CandidateData == currentChoice);
+                continue;
+            }
+
+            var currentChoice = ballot.GetCurrentChoice();
+
+            var nextCandidateCenter = candidateCenters.Find(
+                candidateCenter =>
+                    !candidateCenter.isEliminated &&
+                    candidateCenter.votingCandidateCenter.CandidateData == currentChoice);
 
             if (nextCandidateCenter != null)
             {
-                nextCandidateCenter.AssignBuddy(votingBuddy);
-                
+                nextCandidateCenter.votingCandidateCenter.AssignBuddy(votingBuddy);
+
                 // Set the color of the VotingBuddy
-                votingBuddy.gameObject.GetComponent<MeshRenderer>().material.color = 
-                    currentChoice.candidateColor;
+                var meshRenderer = votingBuddy.gameObject.GetComponent<MeshRenderer>();
+                var voterBuddyMaterial = meshRenderer.material;
+
+                voterBuddyMaterial.SetColor("_BaseColor", currentChoice.candidateColor);
+                voterBuddyMaterial.SetFloat("_HopMultiplier", Random.Range(20f, 27f));
+                voterBuddyMaterial.SetFloat("_HopDelay", Random.Range(-2f, 2f));
+
             }
         }
         
-        foreach (var candidateCenter in CandidateCenters)
+        foreach (var candidateCenter in candidateCenters)
         {
             Debug.Log(
-                $"Candidate {candidateCenter.CandidateData.candidateName} has {candidateCenter.VoteCount} votes.");
+                $"Candidate {candidateCenter.votingCandidateCenter.CandidateData.candidateName} has {candidateCenter.votingCandidateCenter.VoteCount} votes.");
         }
     }
 
     private void MoveVotingBuddies()
     {
-        foreach (var votingChoiceCenter in CandidateCenters)
+        foreach (var votingBuddy in activeVotingBuddies)
         {
-            var assignedBuddies = votingChoiceCenter.assignedBuddies;
-            foreach (var votingBuddy in assignedBuddies)
+            if (!votingBuddy.needsToMoveToNextCandidate)
+                continue;
+
+            // For now, by default, assume vote is exhausted (cheaper function)
+            Vector3 nextDestination = this.transform.position;
+
+            if (!votingBuddy.Ballot.isExhausted)
             {
-                if(!votingBuddy.needsToMoveToNextCandidate)
-                    continue;
-                
-                votingBuddyMover.RegisterMovement(
-                    votingBuddy,
-                    votingChoiceCenter.GetRandomPositionForVotingBuddy());
+                var currCandidateData = votingBuddy.Ballot.GetCurrentChoice();
+
+                // find the next candidate center that's not eliminated
+                var nextCandidateCenter = 
+                    candidateCenters.Find(center =>
+                        !center.isEliminated &&
+                        currCandidateData == center.votingCandidateCenter.CandidateData);
+
+                nextDestination =
+                    nextCandidateCenter.votingCandidateCenter.
+                        GetRandomPositionForVotingBuddy();
             }
+
+            votingBuddyMover.RegisterMovement(
+                votingBuddy,
+                nextDestination,
+                OnVoteBuddyMovementDone);
         }
+    }
+
+    private void OnVoteBuddyMovementDone(VotingBuddyBallotHolder votingBuddyBallotHolder)
+    {
+        var meshRenderer = votingBuddyBallotHolder.GetComponent<MeshRenderer>();
+
+        var voterBuddyMaterial = meshRenderer.material;
+
+        voterBuddyMaterial.SetFloat("_HopMultiplier", 0f);
+        voterBuddyMaterial.SetFloat("_HopDelay", 0f);
     }
 
     private bool TryGetMajorityCandidate(out VotingCandidateCenter votingCandidateCenter)
@@ -187,46 +240,61 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
         votingCandidateCenter = null;
         
-        foreach (var candidateCenter in CandidateCenters)
+        foreach (var candidateCenter in candidateCenters)
         {
-            if (candidateCenter.VoteCount > numberToBeat)
-                votingCandidateCenter = candidateCenter;
+            if (candidateCenter.votingCandidateCenter.VoteCount > numberToBeat)
+                votingCandidateCenter = candidateCenter.votingCandidateCenter;
         }
         
         return votingCandidateCenter != null;
     }
 
-    private void LowestCandidateChangeVotesToNextChoice()
+    private void EliminateCandidateWithLowestVotes()
     {
-        var participatingCandidateCenters = CandidateCenters.FindAll(center => center.VoteCount > 0);
+        var participatingCandidateCenters = 
+            candidateCenters.FindAll(center => center.isEliminated == false);
         
         // Find the candidate with the lowest amount of votes...
-        var votingCandidateWithLowestPoints = participatingCandidateCenters[0];
+        var candidateWithLowestVotes = participatingCandidateCenters[0];
         for (int i = 1; i < participatingCandidateCenters.Count; ++i)
         {
             var candidate = participatingCandidateCenters[i];
             
-            if (candidate.assignedBuddies.Count < votingCandidateWithLowestPoints.assignedBuddies.Count)
+            if (candidate.votingCandidateCenter.assignedBuddies.Count < 
+                candidateWithLowestVotes.votingCandidateCenter.assignedBuddies.Count)
             {
-                votingCandidateWithLowestPoints = candidate;
+                candidateWithLowestVotes = candidate;
             }
+        }
+        candidateWithLowestVotes.isEliminated = true;
+
+        // prepare the list of remaining active candidates
+        List<CandidateData> activeCandidates = new();
+        foreach(var participatingCandidate in participatingCandidateCenters)
+        {
+            if (!participatingCandidate.isEliminated)
+                activeCandidates.Add(
+                    participatingCandidate.votingCandidateCenter.CandidateData);
         }
 
         // assign buddies of this candidate to the next choice...
-        foreach (var votingBuddy in votingCandidateWithLowestPoints.assignedBuddies)
+        foreach (var votingBuddy in 
+            candidateWithLowestVotes.votingCandidateCenter.assignedBuddies)
         {
-            votingBuddy.Data.AdvanceToNextChoice();
+            votingBuddy.Ballot.AdvanceToNextChoice(activeCandidates);
             votingBuddy.needsToMoveToNextCandidate = true;
         }
+
+        candidateWithLowestVotes.votingCandidateCenter.ClearAssignments();
+
         Debug.Log(
-            $"Candidate {votingCandidateWithLowestPoints.CandidateData.candidateName} has been eliminated!");
-        
-        votingCandidateWithLowestPoints.ClearAssignments();
+            $"Candidate {candidateWithLowestVotes.votingCandidateCenter.CandidateData.candidateName} has been eliminated!");
     }
 
     private void DisplayResults()
     {
-        Debug.Log($"Simulation complete after {currentRoundNumber} rounds. Displaying results...");
+        Debug.Log(
+            $"Simulation complete after {currentRoundNumber} rounds. Displaying results...");
 
         CurrentState = SimulationState.DisplayingResults;
 

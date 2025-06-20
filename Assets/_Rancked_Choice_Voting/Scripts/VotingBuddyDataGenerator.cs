@@ -3,9 +3,9 @@ using UnityEngine;
 
 static public class VotingBuddyDataGenerator
 {
-    public static VotingBuddyData GetNewRandomVotingData(List<CandidateData> candidates)
+    public static VotingBuddyBallot GetNewRandomVotingData(List<CandidateData> candidates)
     {
-        var result = new VotingBuddyData();
+        var result = new VotingBuddyBallot();
 
         while (candidates.Count > 0)
         {

@@ -482,7 +482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1f2bafb11a1c204187b39b2e29c7efe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VotingBuddyMover
-  moveSpeed: 3
+  moveSpeed: 8.81
 --- !u!4 &1712327003
 Transform:
   m_ObjectHideFlags: 0
@@ -695,10 +695,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: VotingChoiceCenter
       objectReference: {fileID: 0}
-    - target: {fileID: 3346214456432505871, guid: 1cc618a647425444eb93e5456acf0f8e, type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 1859395175}
     - target: {fileID: 7985437333046945486, guid: 1cc618a647425444eb93e5456acf0f8e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -796,6 +792,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: VotingBuddy
       objectReference: {fileID: 0}
+    - target: {fileID: 5584527672653064268, guid: 4a47ac7cc4090184c8069cdb681dd04e, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5584527672653064268, guid: 4a47ac7cc4090184c8069cdb681dd04e, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2972433a34d026642a179aa3874d8ec0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -814,8 +818,8 @@ SceneRoots:
   - {fileID: 1331711224}
   - {fileID: 635890304}
   - {fileID: 6853047816023050156}
+  - {fileID: 6282264025216409393}
   - {fileID: 642186339}
   - {fileID: 1712327003}
   - {fileID: 2109218042}
   - {fileID: 1054052501}
-  - {fileID: 6282264025216409393}

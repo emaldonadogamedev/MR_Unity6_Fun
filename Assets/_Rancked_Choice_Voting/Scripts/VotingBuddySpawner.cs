@@ -43,22 +43,22 @@ public class VotingBuddySpawner : MonoBehaviour
         );
     }
 
-    public VotingBuddyDataHolder SpawnVotingBuddy(
+    public VotingBuddyBallotHolder SpawnVotingBuddy(
         Vector3 position,
-        VotingBuddyData data)
+        VotingBuddyBallot data)
     {
         GameObject newVotingBuddy = votingBuddyPool.Get();
         newVotingBuddy.transform.position = position;
 
         var votingBuddyDataHolder =
-            newVotingBuddy.GetComponent<VotingBuddyDataHolder>();
+            newVotingBuddy.GetComponent<VotingBuddyBallotHolder>();
         
-        votingBuddyDataHolder.Data = data;
+        votingBuddyDataHolder.Ballot = data;
         
         return votingBuddyDataHolder;
     }
 
-    public void DespawnVotingBuddy(VotingBuddyDataHolder votingBuddyDataHolder)
+    public void DespawnVotingBuddy(VotingBuddyBallotHolder votingBuddyDataHolder)
     {
         votingBuddyPool.Release(votingBuddyDataHolder.gameObject);
     }

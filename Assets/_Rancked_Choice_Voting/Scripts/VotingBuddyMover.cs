@@ -1,33 +1,73 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 public class VotingBuddyMover : MonoBehaviour
 {
     [SerializeField]
-    [Range(1f, 10f)]
-    private float moveSpeed = 3f;
+    [Range(1f, 15f)]
+    private float moveSpeed = 7f;
 
-    private readonly List<(VotingBuddyDataHolder buddy, Vector3 target)> movements = new();
-
-    public void RegisterMovement(VotingBuddyDataHolder buddy, Vector3 target)
+    class MovementTask
     {
-        movements.Add((buddy, target));
+        public VotingBuddyBallotHolder buddy;
+        public Vector3 target;
+        public float speed;
+        public float startDelay;
+
+        public UnityEvent<VotingBuddyBallotHolder> OnMovementTasktDone;
+    }
+
+    private readonly List<MovementTask> movements = new();
+
+    public void RegisterMovement(
+        VotingBuddyBallotHolder buddy,
+        Vector3 target,
+        UnityAction<VotingBuddyBallotHolder> OnDoneCallback)
+    {
+        var newMovementTask = new MovementTask()
+        {
+            buddy = buddy,
+            target = target,
+            speed = moveSpeed + Random.Range(-1f, 2f),
+            startDelay = Random.Range(-0.5f, 0.5f),
+            OnMovementTasktDone = new UnityEvent<VotingBuddyBallotHolder>()
+        };
+
+        newMovementTask.OnMovementTasktDone.AddListener(OnDoneCallback);
+
+        movements.Add(newMovementTask);
     }
 
     void Update()
     {
         for (int i = 0; i < movements.Count; i++)
         {
-            var (buddy, target) = movements[i];
+            var movementTask = movements[i];
 
-            buddy.transform.position = Vector3.MoveTowards(
-                buddy.transform.position,
-                target,
-                Time.deltaTime * moveSpeed);
+            // take care of the delay first
+            movementTask.startDelay -= Time.deltaTime;
+            if (movementTask.startDelay > 0f)
+                continue;
 
-            if (Vector3.Distance(buddy.transform.position, target) <= 0.01f)
+            // continue with the actual movement
+            movementTask.buddy.transform.position = Vector3.MoveTowards(
+                movementTask.buddy.transform.position,
+                movementTask.target,
+                Time.deltaTime * movementTask.speed);
+
+            float distance = Vector3.Distance(
+                movementTask.buddy.transform.position,
+                movementTask.target);
+
+            if (distance <= 0.01f)
             {
-                buddy.needsToMoveToNextCandidate = false;
+                movementTask.buddy.needsToMoveToNextCandidate = false;
+                movementTask.OnMovementTasktDone.Invoke(movementTask.buddy);
+                movementTask.OnMovementTasktDone.RemoveAllListeners();
+
                 movements.RemoveAt(i--);
             }
         }
