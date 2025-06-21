@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Pool;
-using System.Collections.Generic;
 
 public class VotingBuddySpawner : MonoBehaviour
 {

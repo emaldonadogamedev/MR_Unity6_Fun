@@ -4,10 +4,16 @@ using System.Collections.Generic;
 [Serializable]
 public class VotingBuddyBallot
 {
-    public List<CandidateData> RankedChoices = new();
-    public bool isExhausted { get; private set; } = false;
+    public bool IsExhausted { get; private set; } = false;
+
+    private readonly List<CandidateData> RankedChoices = new();
 
     private int CurrentRoundIndex = 0;
+
+    public void AddCandidate(CandidateData candidate)
+    {
+        RankedChoices.Add(candidate);
+    }
 
     public CandidateData GetCurrentChoice()
     {
@@ -16,7 +22,7 @@ public class VotingBuddyBallot
 
     public void AdvanceToNextChoice(List<CandidateData> activeCandidates)
     {
-        if(isExhausted)
+        if(IsExhausted)
             return;
 
         while (true)
@@ -26,7 +32,7 @@ public class VotingBuddyBallot
             // if we're passed the last choice, ballot is exhausted
             if (CurrentRoundIndex >= RankedChoices.Count)
             {
-                isExhausted = true;
+                IsExhausted = true;
                 return;
             }
 

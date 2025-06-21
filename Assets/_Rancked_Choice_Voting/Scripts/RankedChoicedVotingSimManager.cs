@@ -154,7 +154,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
             
             var ballot = votingBuddy.Ballot;
 
-            if(ballot.isExhausted)
+            if(ballot.IsExhausted)
             {
                 // Set the color of the VotingBuddy
                 votingBuddy.gameObject.GetComponent<MeshRenderer>().material.color =
@@ -175,13 +175,9 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                 nextCandidateCenter.votingCandidateCenter.AssignBuddy(votingBuddy);
 
                 // Set the color of the VotingBuddy
-                var meshRenderer = votingBuddy.gameObject.GetComponent<MeshRenderer>();
-                var voterBuddyMaterial = meshRenderer.material;
-
-                voterBuddyMaterial.SetColor("_BaseColor", currentChoice.candidateColor);
-                voterBuddyMaterial.SetFloat("_HopMultiplier", Random.Range(20f, 27f));
-                voterBuddyMaterial.SetFloat("_HopDelay", Random.Range(-2f, 2f));
-
+                VotingBuddyMaterialChanger.ChangeToMovingToNextDestination(
+                    votingBuddy.VotingBuddyMaterial,
+                    currentChoice.candidateColor);
             }
         }
         
@@ -200,9 +196,9 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                 continue;
 
             // For now, by default, assume vote is exhausted (cheaper function)
-            Vector3 nextDestination = this.transform.position;
+            var nextDestination = this.transform.position;
 
-            if (!votingBuddy.Ballot.isExhausted)
+            if (!votingBuddy.Ballot.IsExhausted)
             {
                 var currCandidateData = votingBuddy.Ballot.GetCurrentChoice();
 
@@ -226,12 +222,8 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
     private void OnVoteBuddyMovementDone(VotingBuddyBallotHolder votingBuddyBallotHolder)
     {
-        var meshRenderer = votingBuddyBallotHolder.GetComponent<MeshRenderer>();
-
-        var voterBuddyMaterial = meshRenderer.material;
-
-        voterBuddyMaterial.SetFloat("_HopMultiplier", 0f);
-        voterBuddyMaterial.SetFloat("_HopDelay", 0f);
+        VotingBuddyMaterialChanger.ChangeToNotMoving(
+            votingBuddyBallotHolder.VotingBuddyMaterial);
     }
 
     private bool TryGetMajorityCandidate(out VotingCandidateCenter votingCandidateCenter)
@@ -277,7 +269,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                     participatingCandidate.votingCandidateCenter.CandidateData);
         }
 
-        // assign buddies of this candidate to the next choice...
+        // advance the buddies of this candidate to their next choice
         foreach (var votingBuddy in 
             candidateWithLowestVotes.votingCandidateCenter.assignedBuddies)
         {

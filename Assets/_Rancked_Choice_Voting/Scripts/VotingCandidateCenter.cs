@@ -36,9 +36,9 @@ public class VotingCandidateCenter : MonoBehaviour
         float x = Mathf.Cos(randomAngle);
         float y = Mathf.Sin(randomAngle);
         
-        var dirAmount = Random.Range(-3.5f, 3.5f);
+        float dirAmount = Random.Range(-3.5f, 3.5f);
         
-        var randomPosition = transform.position + (new Vector3(x, 0, y) * dirAmount);
+        Vector3 randomPosition = transform.position + (new Vector3(x, 0f, y) * dirAmount);
         
         return randomPosition;
     }

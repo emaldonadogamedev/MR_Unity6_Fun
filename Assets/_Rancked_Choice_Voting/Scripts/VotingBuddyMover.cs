@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -58,11 +59,11 @@ public class VotingBuddyMover : MonoBehaviour
                 movementTask.target,
                 Time.deltaTime * movementTask.speed);
 
-            float distance = Vector3.Distance(
+            float distance = math.distancesq(
                 movementTask.buddy.transform.position,
                 movementTask.target);
 
-            if (distance <= 0.01f)
+            if (distance >= -0.001f && distance <= 0.001f)
             {
                 movementTask.buddy.needsToMoveToNextCandidate = false;
                 movementTask.OnMovementTasktDone.Invoke(movementTask.buddy);

@@ -102,6 +102,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f1e431526488e143aa32ffc25816c46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VotingBuddyDataHolder
-  Ballot:
-    RankedChoices: []
+  m_Renderer: {fileID: 5584527672653064268}
   needsToMoveToNextCandidate: 1
