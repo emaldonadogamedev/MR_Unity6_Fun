@@ -286,6 +286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VotingChoiceCenter
   visualsMeshRenderer: {fileID: 3086440276097643486}
+  votingChoiceCenterVisuals: {fileID: 8216138035244679422}
 --- !u!1 &2984431068025959179
 GameObject:
   m_ObjectHideFlags: 0

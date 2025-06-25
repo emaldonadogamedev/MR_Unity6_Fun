@@ -6,22 +6,32 @@ public class VotingCandidateCenter : MonoBehaviour
     [SerializeField]
     private MeshRenderer visualsMeshRenderer;
 
+    //[SerializeField]
+    public VotingChoiceCenterVisuals votingChoiceCenterVisuals;
+
     public CandidateData CandidateData { get; private set; }
 
     public int VoteCount => assignedBuddies.Count;
 
-    public List<VotingBuddyBallotHolder> assignedBuddies { get; private set; } = new();
+    public HashSet<VotingBuddyBallotHolder> assignedBuddies { get; private set; } = new();
 
     public void Initialize(CandidateData candidate)
     {
         CandidateData = candidate;
 
-        visualsMeshRenderer.material.color = candidate.candidateColor;
+        votingChoiceCenterVisuals.SetName(candidate.candidateName);
+        votingChoiceCenterVisuals.SetMeshColor(candidate.candidateColor);
+        votingChoiceCenterVisuals.SetVoteCount(0);
     }
 
     public void AssignBuddy(VotingBuddyBallotHolder buddy)
     {
         assignedBuddies.Add(buddy);
+    }
+
+    public void RemoveBuddy(VotingBuddyBallotHolder buddy)
+    {
+        assignedBuddies.Remove(buddy);
     }
 
     public void ClearAssignments()

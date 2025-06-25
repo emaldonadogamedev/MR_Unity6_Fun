@@ -12,6 +12,8 @@ public class VotingChoiceCenterVisuals : MonoBehaviour
     [SerializeField]
     private TMP_Text voteCountTextbox;
 
+    private int voteCount = 0;
+
     public void SetName(string name)
     {
         nameTextbox.text = name;
@@ -19,11 +21,29 @@ public class VotingChoiceCenterVisuals : MonoBehaviour
 
     public void SetVoteCount(int voteCount)
     {
-        voteCountTextbox.text = $"{voteCount}";
+        this.voteCount = voteCount;
+        UpdateVoteTexbox();
+    }
+
+    public void IncreaseVote()
+    {
+        voteCount++;
+        UpdateVoteTexbox();
+    }
+
+    public void DecreaseVote()
+    {
+        voteCount--;
+        UpdateVoteTexbox();
     }
 
     public void SetMeshColor(Color color)
     {
         visualMeshRenderer.material.color = color;
+    }
+
+    private void UpdateVoteTexbox()
+    {
+        voteCountTextbox.text = $"Votes: {voteCount}";
     }
 }

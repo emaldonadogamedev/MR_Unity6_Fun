@@ -9,24 +9,25 @@ public class VotingBuddyMover : MonoBehaviour
 {
     [SerializeField]
     [Range(1f, 15f)]
-    private float moveSpeed = 7f;
+    private float moveSpeed = 8f;
 
-    class MovementTask
+    public class MovementTask
     {
         public VotingBuddyBallotHolder buddy;
         public Vector3 target;
         public float speed;
         public float startDelay;
+        public bool isDelayDone = false;
 
-        public UnityEvent<VotingBuddyBallotHolder> OnMovementTasktDone;
+        public UnityEvent<VotingBuddyBallotHolder> OnMovementTaskBegun;
+        public UnityEvent<VotingBuddyBallotHolder> OnMovementTaskDone;
     }
 
     private readonly List<MovementTask> movements = new();
 
-    public void RegisterMovement(
+    public MovementTask RegisterMovement(
         VotingBuddyBallotHolder buddy,
-        Vector3 target,
-        UnityAction<VotingBuddyBallotHolder> OnDoneCallback)
+        Vector3 target)
     {
         var newMovementTask = new MovementTask()
         {
@@ -34,12 +35,13 @@ public class VotingBuddyMover : MonoBehaviour
             target = target,
             speed = moveSpeed + Random.Range(-1f, 2f),
             startDelay = Random.Range(-0.5f, 0.5f),
-            OnMovementTasktDone = new UnityEvent<VotingBuddyBallotHolder>()
+            OnMovementTaskBegun = new UnityEvent<VotingBuddyBallotHolder>(),
+            OnMovementTaskDone = new UnityEvent<VotingBuddyBallotHolder>()
         };
 
-        newMovementTask.OnMovementTasktDone.AddListener(OnDoneCallback);
-
         movements.Add(newMovementTask);
+
+        return newMovementTask;
     }
 
     void Update()
@@ -48,29 +50,47 @@ public class VotingBuddyMover : MonoBehaviour
         {
             var movementTask = movements[i];
 
-            // take care of the delay first
-            movementTask.startDelay -= Time.deltaTime;
-            if (movementTask.startDelay > 0f)
-                continue;
-
-            // continue with the actual movement
-            movementTask.buddy.transform.position = Vector3.MoveTowards(
-                movementTask.buddy.transform.position,
-                movementTask.target,
-                Time.deltaTime * movementTask.speed);
-
-            float distance = math.distancesq(
-                movementTask.buddy.transform.position,
-                movementTask.target);
-
-            if (distance >= -0.001f && distance <= 0.001f)
+            if (!movementTask.isDelayDone)
             {
-                movementTask.buddy.needsToMoveToNextCandidate = false;
-                movementTask.OnMovementTasktDone.Invoke(movementTask.buddy);
-                movementTask.OnMovementTasktDone.RemoveAllListeners();
-
-                movements.RemoveAt(i--);
+                ProcessInitialDelay(ref movementTask);
             }
+            else
+            {
+                // continue with the actual movement
+                movementTask.buddy.transform.position = Vector3.MoveTowards(
+                    movementTask.buddy.transform.position,
+                    movementTask.target,
+                    Time.deltaTime * movementTask.speed);
+
+                float distance = math.distancesq(
+                    movementTask.buddy.transform.position,
+                    movementTask.target);
+
+                if (distance >= -0.001f && distance <= 0.001f)
+                {
+                    movementTask.buddy.needsToMoveToNextCandidate = false;
+
+                    movementTask.OnMovementTaskDone.Invoke(movementTask.buddy);
+                    movementTask.OnMovementTaskDone.RemoveAllListeners();
+
+                    movements.RemoveAt(i--);
+                }
+            }
+        }
+    }
+
+    private void ProcessInitialDelay(ref MovementTask movementTask)
+    {
+        // take care of the delay first
+        movementTask.startDelay -= Time.deltaTime;
+        if (movementTask.startDelay > 0f)
+            return;
+        else
+        {
+            movementTask.startDelay = 0f;
+            movementTask.OnMovementTaskBegun.Invoke(movementTask.buddy);
+            movementTask.OnMovementTaskBegun.RemoveAllListeners();
+            movementTask.isDelayDone = true;
         }
     }
 

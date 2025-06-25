@@ -3,7 +3,7 @@ using UnityEngine;
 
 static public class VotingBuddyDataGenerator
 {
-    public static VotingBuddyBallot GetNewRandomVotingData(List<CandidateData> candidates)
+    public static VotingBuddyBallot GetNewRandomVotingData(List<VotingCandidateCenter> candidates)
     {
         var newVotingBuddyBallot = new VotingBuddyBallot();
 

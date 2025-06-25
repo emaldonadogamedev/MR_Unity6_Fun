@@ -304,8 +304,8 @@
     },
     "m_FragmentContext": {
         "m_Position": {
-            "x": 1301.60009765625,
-            "y": 437.5999755859375
+            "x": 1301.5999755859375,
+            "y": 447.199951171875
         },
         "m_Blocks": [
             {
@@ -361,10 +361,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -136.79998779296876,
-            "y": 392.0,
-            "width": 208.0,
-            "height": 301.59991455078127
+            "x": 50.399993896484378,
+            "y": 416.79998779296877,
+            "width": 127.19998168945313,
+            "height": 117.5999755859375
         }
     },
     "m_Slots": [
@@ -384,7 +384,7 @@
         "plus"
     ],
     "m_Precision": 0,
-    "m_PreviewExpanded": true,
+    "m_PreviewExpanded": false,
     "m_DismissedVersion": 0,
     "m_PreviewMode": 0,
     "m_CustomColors": {
@@ -873,10 +873,10 @@
         "m_Expanded": false,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -255.99996948242188,
-            "y": 390.39996337890627,
-            "width": 79.99998474121094,
-            "height": 76.80001831054688
+            "x": -68.79998779296875,
+            "y": 415.199951171875,
+            "width": 80.0,
+            "height": 76.800048828125
         }
     },
     "m_Slots": [
@@ -1136,7 +1136,7 @@
     "m_RefNameGeneratedByDisplayName": "BaseColor",
     "m_DefaultReferenceName": "_BaseColor",
     "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": false,
+    "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
     "m_DismissedVersion": 0,
@@ -1445,10 +1445,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 657.5999755859375,
-            "y": 569.5999145507813,
-            "width": 206.39996337890626,
-            "height": 128.00006103515626
+            "x": 646.4000244140625,
+            "y": 548.0,
+            "width": 206.4000244140625,
+            "height": 128.0
         }
     },
     "m_Slots": [
@@ -1590,9 +1590,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -280.7999572753906,
-            "y": 521.5999145507813,
-            "width": 124.79998779296875,
+            "x": -93.60000610351563,
+            "y": 546.3999633789063,
+            "width": 116.80001831054688,
             "height": 33.60003662109375
         }
     },
@@ -1641,7 +1641,7 @@
     "m_RefNameGeneratedByDisplayName": "HopDelay",
     "m_DefaultReferenceName": "_HopDelay",
     "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": false,
+    "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
     "m_DismissedVersion": 0,
@@ -1982,7 +1982,7 @@
     "m_RefNameGeneratedByDisplayName": "HopMultiplier",
     "m_DefaultReferenceName": "_HopMultiplier",
     "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": false,
+    "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
     "m_DismissedVersion": 0,
@@ -2130,7 +2130,7 @@
     },
     "m_Name": "Split",
     "m_DrawState": {
-        "m_Expanded": true,
+        "m_Expanded": false,
         "m_Position": {
             "serializedVersion": "2",
             "x": 692.7999877929688,

@@ -94,7 +94,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
     private void SpawnVotingBuddiesForSimulation()
     {
-        List<CandidateData> candidates;
+        List<VotingCandidateCenter> candidates;
 
         // allocate the necessary voting buddies
         for (int i = 0; i < votingBuddyCoint; ++i)
@@ -103,7 +103,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
             candidates = new();
             foreach (var candidateCenters in candidateCenters)
             {
-                candidates.Add(candidateCenters.votingCandidateCenter.CandidateData);
+                candidates.Add(candidateCenters.votingCandidateCenter);
             }
 
             var newVotingBuddyData =
@@ -168,16 +168,11 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
             var nextCandidateCenter = candidateCenters.Find(
                 candidateCenter =>
                     !candidateCenter.isEliminated &&
-                    candidateCenter.votingCandidateCenter.CandidateData == currentChoice);
+                    candidateCenter.votingCandidateCenter == currentChoice);
 
             if (nextCandidateCenter != null)
             {
                 nextCandidateCenter.votingCandidateCenter.AssignBuddy(votingBuddy);
-
-                // Set the color of the VotingBuddy
-                VotingBuddyMaterialChanger.ChangeToMovingToNextDestination(
-                    votingBuddy.VotingBuddyMaterial,
-                    currentChoice.candidateColor);
             }
         }
         
@@ -206,17 +201,19 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                 var nextCandidateCenter = 
                     candidateCenters.Find(center =>
                         !center.isEliminated &&
-                        currCandidateData == center.votingCandidateCenter.CandidateData);
+                        currCandidateData == center.votingCandidateCenter);
 
                 nextDestination =
                     nextCandidateCenter.votingCandidateCenter.
                         GetRandomPositionForVotingBuddy();
             }
 
-            votingBuddyMover.RegisterMovement(
+            var newMovementTask = votingBuddyMover.RegisterMovement(
                 votingBuddy,
-                nextDestination,
-                OnVoteBuddyMovementDone);
+                nextDestination);
+
+            newMovementTask.OnMovementTaskBegun.AddListener(OnVoteBuddyMovementBegin);
+            newMovementTask.OnMovementTaskDone.AddListener(OnVoteBuddyMovementDone);
         }
     }
 
@@ -224,6 +221,24 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
     {
         VotingBuddyMaterialChanger.ChangeToNotMoving(
             votingBuddyBallotHolder.VotingBuddyMaterial);
+
+        var currentCandidate = votingBuddyBallotHolder.Ballot.GetCurrentChoice();
+
+        currentCandidate.votingChoiceCenterVisuals.IncreaseVote();
+    }
+
+    private void OnVoteBuddyMovementBegin(VotingBuddyBallotHolder votingBuddyBallotHolder)
+    {
+        var currentCandidate = votingBuddyBallotHolder.Ballot.GetCurrentChoice();
+
+        VotingBuddyMaterialChanger.ChangeToMovingToNextDestination(
+            votingBuddyBallotHolder.VotingBuddyMaterial,
+            currentCandidate.CandidateData.candidateColor);
+
+        if (currentRoundNumber > 1)
+        {
+            currentCandidate.votingChoiceCenterVisuals.DecreaseVote();
+        }
     }
 
     private bool TryGetMajorityCandidate(out VotingCandidateCenter votingCandidateCenter)
@@ -261,12 +276,12 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
         candidateWithLowestVotes.isEliminated = true;
 
         // prepare the list of remaining active candidates
-        List<CandidateData> activeCandidates = new();
+        var activeCandidates = new List<VotingCandidateCenter>();
         foreach(var participatingCandidate in participatingCandidateCenters)
         {
             if (!participatingCandidate.isEliminated)
                 activeCandidates.Add(
-                    participatingCandidate.votingCandidateCenter.CandidateData);
+                    participatingCandidate.votingCandidateCenter);
         }
 
         // advance the buddies of this candidate to their next choice
@@ -279,8 +294,10 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
         candidateWithLowestVotes.votingCandidateCenter.ClearAssignments();
 
-        Debug.Log(
-            $"Candidate {candidateWithLowestVotes.votingCandidateCenter.CandidateData.candidateName} has been eliminated!");
+        var candidateName = 
+            candidateWithLowestVotes.votingCandidateCenter.CandidateData.candidateName;
+
+        Debug.Log($"Candidate {candidateName} has been eliminated!");
     }
 
     private void DisplayResults()

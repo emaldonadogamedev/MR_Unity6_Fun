@@ -23,7 +23,7 @@ public class RankedChoicedVotingSimManagerEditor : Editor
             if (plane != null)
             {
                 // Get the bounds of the plane
-                MeshRenderer planeRenderer = plane.GetComponent<MeshRenderer>();
+                var planeRenderer = plane.GetComponent<MeshRenderer>();
                 if (planeRenderer != null)
                 {
                     Bounds bounds = planeRenderer.bounds;
@@ -39,7 +39,7 @@ public class RankedChoicedVotingSimManagerEditor : Editor
                     var newCandidate = new CandidateData
                     {
                         candidateColor = Random.ColorHSV(),
-                        candidateName = $"Random Candidate_{Random.Range(0, 100)}"
+                        candidateName = $"Rand Candidate_{Random.Range(0, 100)}"
                     };
                     
                     Debug.Log(
