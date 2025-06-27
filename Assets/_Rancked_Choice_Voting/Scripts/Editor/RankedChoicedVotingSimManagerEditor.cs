@@ -13,13 +13,13 @@ public class RankedChoicedVotingSimManagerEditor : Editor
 
         EditorGUILayout.LabelField("-- We're playing! --");
 
+        var manager = (RankedChoicedVotingSimManager)target;
+
         // Add a button to spawn a voting choice center at a random position
         if (GUILayout.Button("Add Random Voting Choice Center"))
         {
-            var manager = (RankedChoicedVotingSimManager)target;
-
             // Find the plane in the scene
-            GameObject plane = GameObject.Find("Plane");
+            var plane = GameObject.Find("Plane");
             if (plane != null)
             {
                 // Get the bounds of the plane
@@ -61,8 +61,6 @@ public class RankedChoicedVotingSimManagerEditor : Editor
         // Add a button to spawn a voting choice center at a random position
         if (GUILayout.Button("Start simulation!"))
         {
-            var manager = (RankedChoicedVotingSimManager)target;
-            
             manager.StartSimulation();
         }
     }

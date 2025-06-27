@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class RankedChoicedVotingSimManager : MonoBehaviour
@@ -134,6 +135,13 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                 Debug.Log(
                     $"Winner is {winner.CandidateData.candidateName} with {winner.VoteCount} votes!");
 
+                foreach(var votingBuddy in winner.assignedBuddies)
+                {
+                    VotingBuddyMaterialChanger.ChangeToMovingToNextDestination(
+                        votingBuddy.VotingBuddyMaterial, 
+                        votingBuddy.Ballot.GetCurrentChoice().CandidateData.candidateColor);
+                }
+
                 break;
             }
 
@@ -147,34 +155,35 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
     private void RevealCurrentVotes()
     {
-        foreach (var votingBuddy in activeVotingBuddies)
-        {
-            if(!votingBuddy.needsToMoveToNextCandidate)
-                continue;
-            
-            var ballot = votingBuddy.Ballot;
-
-            if(ballot.IsExhausted)
-            {
-                // Set the color of the VotingBuddy
-                votingBuddy.gameObject.GetComponent<MeshRenderer>().material.color =
-                    new Color(.5f, .5f, .5f, 0.5f);
-
-                continue;
-            }
-
-            var currentChoice = ballot.GetCurrentChoice();
-
-            var nextCandidateCenter = candidateCenters.Find(
-                candidateCenter =>
-                    !candidateCenter.isEliminated &&
-                    candidateCenter.votingCandidateCenter == currentChoice);
-
-            if (nextCandidateCenter != null)
-            {
-                nextCandidateCenter.votingCandidateCenter.AssignBuddy(votingBuddy);
-            }
-        }
+        // TODO: handle exhausted vote in the future
+        //foreach (var votingBuddy in activeVotingBuddies)
+        //{
+        //    if(!votingBuddy.needsToMoveToNextCandidate)
+        //        continue;
+        //    
+        //    var ballot = votingBuddy.Ballot;
+        //
+        //    if(ballot.IsExhausted)
+        //    {
+        //        // Set the color of the VotingBuddy
+        //        votingBuddy.gameObject.GetComponent<MeshRenderer>().material.color =
+        //            new Color(.5f, .5f, .5f, 0.5f);
+        //
+        //        continue;
+        //    }
+        //
+        //    //var currentChoice = ballot.GetCurrentChoice();
+        //    //
+        //    //var nextCandidateCenter = candidateCenters.Find(
+        //    //    candidateCenter =>
+        //    //        !candidateCenter.isEliminated &&
+        //    //        candidateCenter.votingCandidateCenter == currentChoice);
+        //    //
+        //    //if (nextCandidateCenter != null)
+        //    //{
+        //    //    nextCandidateCenter.votingCandidateCenter.AssignBuddy(votingBuddy);
+        //    //}
+        //}
         
         foreach (var candidateCenter in candidateCenters)
         {
@@ -208,7 +217,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                         GetRandomPositionForVotingBuddy();
             }
 
-            var newMovementTask = votingBuddyMover.RegisterMovement(
+            var newMovementTask = votingBuddyMover.CreateMovementTask(
                 votingBuddy,
                 nextDestination);
 
@@ -224,7 +233,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
 
         var currentCandidate = votingBuddyBallotHolder.Ballot.GetCurrentChoice();
 
-        currentCandidate.votingChoiceCenterVisuals.IncreaseVote();
+        currentCandidate.AssignBuddy(votingBuddyBallotHolder);
     }
 
     private void OnVoteBuddyMovementBegin(VotingBuddyBallotHolder votingBuddyBallotHolder)
@@ -234,11 +243,6 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
         VotingBuddyMaterialChanger.ChangeToMovingToNextDestination(
             votingBuddyBallotHolder.VotingBuddyMaterial,
             currentCandidate.CandidateData.candidateColor);
-
-        if (currentRoundNumber > 1)
-        {
-            currentCandidate.votingChoiceCenterVisuals.DecreaseVote();
-        }
     }
 
     private bool TryGetMajorityCandidate(out VotingCandidateCenter votingCandidateCenter)
@@ -284,14 +288,11 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                     participatingCandidate.votingCandidateCenter);
         }
 
-        // advance the buddies of this candidate to their next choice
-        foreach (var votingBuddy in 
-            candidateWithLowestVotes.votingCandidateCenter.assignedBuddies)
+        foreach(var votingBuddy in candidateWithLowestVotes.votingCandidateCenter.assignedBuddies)
         {
             votingBuddy.Ballot.AdvanceToNextChoice(activeCandidates);
             votingBuddy.needsToMoveToNextCandidate = true;
         }
-
         candidateWithLowestVotes.votingCandidateCenter.ClearAssignments();
 
         var candidateName = 

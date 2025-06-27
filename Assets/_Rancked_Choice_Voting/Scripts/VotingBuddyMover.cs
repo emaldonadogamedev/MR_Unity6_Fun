@@ -25,7 +25,7 @@ public class VotingBuddyMover : MonoBehaviour
 
     private readonly List<MovementTask> movements = new();
 
-    public MovementTask RegisterMovement(
+    public MovementTask CreateMovementTask(
         VotingBuddyBallotHolder buddy,
         Vector3 target)
     {

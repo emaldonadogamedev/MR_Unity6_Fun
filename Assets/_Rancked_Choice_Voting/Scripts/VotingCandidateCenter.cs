@@ -27,16 +27,19 @@ public class VotingCandidateCenter : MonoBehaviour
     public void AssignBuddy(VotingBuddyBallotHolder buddy)
     {
         assignedBuddies.Add(buddy);
+        votingChoiceCenterVisuals.IncreaseVote();
     }
 
     public void RemoveBuddy(VotingBuddyBallotHolder buddy)
     {
         assignedBuddies.Remove(buddy);
+        votingChoiceCenterVisuals.DecreaseVote();
     }
 
     public void ClearAssignments()
     {
         assignedBuddies.Clear();
+        votingChoiceCenterVisuals.SetVoteCount(0);
     }
 
     public Vector3 GetRandomPositionForVotingBuddy()
