@@ -18,11 +18,9 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
     [Range(50, 1000)]
     private int votingBuddyCoint = 300;
 
-    [SerializeField]
-    [Range(2, 10)]
-    private int votingChoiceMax = 5;
-
     public int VotingBuddyCoint => votingBuddyCoint;
+
+    static public readonly int MAX_VOTING_CHOICE_COUNT = 10;
 
     [SerializeField]
     private VotingChoiceCenterSpawner votingChoiceCenterSpawner;
@@ -38,20 +36,35 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
 
     public MeshRenderer PlaneFloorMeshRenderer => planeFloorMeshRenderer;
 
-    private List<VotingCandidateCenter> candidateCenters = new();
+    private readonly List<VotingCandidateCenter> candidateCenters = new();
 
-    private List<VotingBuddyBallotHolder> activeVotingBuddies = new();
+    private readonly List<VotingBuddyBallotHolder> activeVotingBuddies = new();
 
     private int currentRoundNumber = 1;
 
     public void AddCandidateCenter(Vector3 position, CandidateData candidate)
     {
+        if (candidateCenters.Count >= MAX_VOTING_CHOICE_COUNT)
+        {
+            Debug.Log(
+                $"Max amount of {MAX_VOTING_CHOICE_COUNT} voting choices reached");
+
+            return;
+        }
+
         var newVotingChoiceCenter =
             votingChoiceCenterSpawner.SpawnVotingCandidateCenter(
                 position,
                 candidate);
 
         candidateCenters.Add(newVotingChoiceCenter);
+    }
+
+    public void RemoveCandidateCenter(VotingCandidateCenter votingCandidateCenter)
+    {
+        candidateCenters.Remove(votingCandidateCenter);
+
+        votingChoiceCenterSpawner.DespawnVotingChoiceCenter(votingCandidateCenter);
     }
 
     public void StartSimulation()
