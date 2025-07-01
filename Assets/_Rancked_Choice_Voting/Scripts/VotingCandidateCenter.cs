@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class VotingCandidateCenter : MonoBehaviour
@@ -6,14 +7,28 @@ public class VotingCandidateCenter : MonoBehaviour
     [SerializeField]
     private MeshRenderer visualsMeshRenderer;
 
-    //[SerializeField]
     public VotingChoiceCenterVisuals votingChoiceCenterVisuals;
 
     public CandidateData CandidateData { get; private set; }
 
-    public int VoteCount => assignedBuddies.Count;
+    public int VoteCount => 
+        assignedBuddies == null ? 0 : assignedBuddies.Count;
+
+    public bool IsEliminated => 
+        CandidateData == null ? false : CandidateData.isEliminated;
 
     public HashSet<VotingBuddyBallotHolder> assignedBuddies { get; private set; } = new();
+
+    private readonly float voteBuddyPlacementRadius = 6f;
+
+    private float GetCurrentCandidatePercentage()
+    {
+        int totalVotes = RankedChoicedVotingSimManager.Instance.VotingBuddyCoint;
+
+        float percentage = ((float)VoteCount / totalVotes);
+
+        return percentage;
+    }
 
     public void Initialize(CandidateData candidate)
     {
@@ -44,12 +59,14 @@ public class VotingCandidateCenter : MonoBehaviour
 
     public Vector3 GetRandomPositionForVotingBuddy()
     {
-        float randomAngle = Random.Range(0, 360) * Mathf.Deg2Rad;
+        float randomAngleInRadians = Random.Range(0f, 360f) * Mathf.Deg2Rad;
         
-        float x = Mathf.Cos(randomAngle);
-        float y = Mathf.Sin(randomAngle);
-        
-        float dirAmount = Random.Range(-3.5f, 3.5f);
+        float x = Mathf.Cos(randomAngleInRadians);
+        float y = Mathf.Sin(randomAngleInRadians);
+
+        float addedRadius = GetCurrentCandidatePercentage();
+
+        float dirAmount = Random.Range(0f, voteBuddyPlacementRadius + addedRadius);
         
         Vector3 randomPosition = transform.position + (new Vector3(x, 0f, y) * dirAmount);
         

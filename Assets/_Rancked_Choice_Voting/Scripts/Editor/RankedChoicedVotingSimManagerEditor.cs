@@ -4,6 +4,27 @@ using UnityEngine;
 [CustomEditor(typeof(RankedChoicedVotingSimManager))]
 public class RankedChoicedVotingSimManagerEditor : Editor
 {
+    int candidateNumber = 1;
+
+    private void OnEnable()
+    {
+        candidateNumber = 1;
+        EditorApplication.playModeStateChanged += OnEditorPlayModeStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        EditorApplication.playModeStateChanged -= OnEditorPlayModeStateChanged;
+    }
+
+    private void OnEditorPlayModeStateChanged(PlayModeStateChange playModeStateChange)
+    {
+        if(playModeStateChange == PlayModeStateChange.ExitingPlayMode)
+        {
+            candidateNumber = 1;
+        }
+    }
+
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
@@ -19,12 +40,11 @@ public class RankedChoicedVotingSimManagerEditor : Editor
         if (GUILayout.Button("Add Random Voting Choice Center"))
         {
             // Find the plane in the scene
-            var plane = GameObject.Find("Plane");
+            var plane = manager.PlaneFloorMeshRenderer;
             if (plane != null)
             {
                 // Get the bounds of the plane
-                var planeRenderer = plane.GetComponent<MeshRenderer>();
-                if (planeRenderer != null)
+                if (plane.TryGetComponent<MeshRenderer>(out var planeRenderer))
                 {
                     Bounds bounds = planeRenderer.bounds;
 
@@ -39,7 +59,7 @@ public class RankedChoicedVotingSimManagerEditor : Editor
                     var newCandidate = new CandidateData
                     {
                         candidateColor = Random.ColorHSV(),
-                        candidateName = $"Rand Candidate_{Random.Range(0, 100)}"
+                        candidateName = $"Candidate_{candidateNumber++}"
                     };
                     
                     Debug.Log(

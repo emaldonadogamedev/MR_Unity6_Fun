@@ -39,7 +39,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _HopDelay: 0
-    - _HopMultiplier: 35
+    - _HopMultiplier: 20
     - _QueueControl: 0
     - _QueueOffset: 0
     - _XRMotionVectorsPass: 1

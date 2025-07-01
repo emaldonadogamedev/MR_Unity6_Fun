@@ -13,10 +13,12 @@ public class VotingChoiceCenterVisuals : MonoBehaviour
     private TMP_Text voteCountTextbox;
 
     private int voteCount = 0;
+    private string candidateName;
 
     public void SetName(string name)
     {
-        nameTextbox.text = name;
+        candidateName = name;
+        nameTextbox.text = candidateName;
     }
 
     public void SetVoteCount(int voteCount)
@@ -42,8 +44,17 @@ public class VotingChoiceCenterVisuals : MonoBehaviour
         visualMeshRenderer.material.color = color;
     }
 
+    public void SetAsWinner()
+    {
+        nameTextbox.text = $"{candidateName}\nWins!";
+    }
+
     private void UpdateVoteTexbox()
     {
-        voteCountTextbox.text = $"Votes: {voteCount}";
+        int totalVotes = RankedChoicedVotingSimManager.Instance.VotingBuddyCoint;
+
+        float percentage = ((float)voteCount / totalVotes);
+
+        voteCountTextbox.text = $"Votes: {voteCount}, {percentage:0.0%}";
     }
 }

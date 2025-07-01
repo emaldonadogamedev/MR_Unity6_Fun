@@ -1,0 +1,16 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UITK/VotingBuddyBallotDataUSS.uss?fileID=7433441132597879392&amp;guid=2fb8281bcf00b5f4bb4303f485c67ea6&amp;type=3#VotingBuddyBallotDataUSS" />
+    <ui:VisualElement name="CandidateData" data-source-type="CandidateData, Assembly-CSharp" class="candidateData" style="flex-grow: 1; border-top-width: 3px; border-bottom-width: 3px;">
+        <ui:Label text="{Candidate Name}" name="Name" emoji-fallback-support="false" class="dataInfoSize">
+            <Bindings>
+                <ui:DataBinding property="text" data-source-path="candidateName" binding-mode="ToTarget" />
+            </Bindings>
+        </ui:Label>
+        <ui:VisualElement name="Color" class="dataInfoSize candidateColorBox" style="background-color: rgb(255, 255, 255); background-image: url(&quot;project://database/Assets/Samples/XR%20Interaction%20Toolkit/3.1.2/AR%20Starter%20Assets/ARDemoSceneAssets/Sprites/Button%20-%20Rounded%20Radius%20-%204px.png?fileID=2800000&amp;guid=df3b17ab68da00343a77bebb0c295407&amp;type=3#Button - Rounded Radius - 4px&quot;); -unity-background-image-tint-color: rgb(255, 255, 255);">
+            <Bindings>
+                <ui:DataBinding property="style.backgroundColor" data-source-path="candidateColor" binding-mode="ToTarget" />
+            </Bindings>
+        </ui:VisualElement>
+        <ui:Label text="{Status}" name="Status" class="dataInfoSize" />
+    </ui:VisualElement>
+</ui:UXML>

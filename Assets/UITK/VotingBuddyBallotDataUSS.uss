@@ -1,0 +1,35 @@
+:root {
+    background-color: rgba(245, 245, 245, 0.14);
+}
+
+.ballotContainer {
+}
+
+.candidateData {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    align-self: auto;
+    background-color: rgba(0, 0, 0, 0);
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+}
+
+.dataInfoSize {
+    width: 33%;
+    height: 100%;
+    align-items: center;
+}
+
+.candidateColorBox {
+    margin-left: 14px;
+    margin-right: 14px;
+    margin-top: 14px;
+    margin-bottom: 14px;
+}

@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-public class RankedChoicedVotingSimManager : MonoBehaviour
+public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimManager>
 {
     public enum SimulationState : byte
     { 
@@ -13,17 +12,17 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
         DisplayingResults
     }
 
-    class CandidateSimulationData
-    {
-        public VotingCandidateCenter votingCandidateCenter;
-        public bool isEliminated = false;
-    }
-
     public SimulationState CurrentState { get; private set; } = SimulationState.Idle;
 
     [SerializeField]
     [Range(50, 1000)]
     private int votingBuddyCoint = 300;
+
+    [SerializeField]
+    [Range(2, 10)]
+    private int votingChoiceMax = 5;
+
+    public int VotingBuddyCoint => votingBuddyCoint;
 
     [SerializeField]
     private VotingChoiceCenterSpawner votingChoiceCenterSpawner;
@@ -34,7 +33,12 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
     [SerializeField]
     private VotingBuddyMover votingBuddyMover;
 
-    private List<CandidateSimulationData> candidateCenters = new();
+    [SerializeField]
+    private MeshRenderer planeFloorMeshRenderer;
+
+    public MeshRenderer PlaneFloorMeshRenderer => planeFloorMeshRenderer;
+
+    private List<VotingCandidateCenter> candidateCenters = new();
 
     private List<VotingBuddyBallotHolder> activeVotingBuddies = new();
 
@@ -47,12 +51,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                 position,
                 candidate);
 
-        candidateCenters.Add(
-            new CandidateSimulationData()
-            {
-                isEliminated = false,
-                votingCandidateCenter = newVotingChoiceCenter
-            });
+        candidateCenters.Add(newVotingChoiceCenter);
     }
 
     public void StartSimulation()
@@ -77,8 +76,8 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
     {
         foreach (var center in candidateCenters)
         {
-            center.isEliminated = false;
-            center.votingCandidateCenter.ClearAssignments();
+            center.CandidateData.isEliminated = false;
+            center.ClearAssignments();
         }
 
         //TODO: HORRIBLY INEFFICIENT!
@@ -104,7 +103,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
             candidates = new();
             foreach (var candidateCenters in candidateCenters)
             {
-                candidates.Add(candidateCenters.votingCandidateCenter);
+                candidates.Add(candidateCenters);
             }
 
             var newVotingBuddyData =
@@ -134,6 +133,8 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
             {
                 Debug.Log(
                     $"Winner is {winner.CandidateData.candidateName} with {winner.VoteCount} votes!");
+
+                winner.votingChoiceCenterVisuals.SetAsWinner();
 
                 foreach(var votingBuddy in winner.assignedBuddies)
                 {
@@ -188,7 +189,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
         foreach (var candidateCenter in candidateCenters)
         {
             Debug.Log(
-                $"Candidate {candidateCenter.votingCandidateCenter.CandidateData.candidateName} has {candidateCenter.votingCandidateCenter.VoteCount} votes.");
+                $"Candidate {candidateCenter.CandidateData.candidateName} has {candidateCenter.VoteCount} votes.");
         }
     }
 
@@ -209,12 +210,11 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
                 // find the next candidate center that's not eliminated
                 var nextCandidateCenter = 
                     candidateCenters.Find(center =>
-                        !center.isEliminated &&
-                        currCandidateData == center.votingCandidateCenter);
+                        !center.IsEliminated &&
+                        currCandidateData == center);
 
                 nextDestination =
-                    nextCandidateCenter.votingCandidateCenter.
-                        GetRandomPositionForVotingBuddy();
+                    nextCandidateCenter.GetRandomPositionForVotingBuddy();
             }
 
             var newMovementTask = votingBuddyMover.CreateMovementTask(
@@ -253,8 +253,8 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
         
         foreach (var candidateCenter in candidateCenters)
         {
-            if (candidateCenter.votingCandidateCenter.VoteCount > numberToBeat)
-                votingCandidateCenter = candidateCenter.votingCandidateCenter;
+            if (candidateCenter.VoteCount > numberToBeat)
+                votingCandidateCenter = candidateCenter;
         }
         
         return votingCandidateCenter != null;
@@ -263,7 +263,7 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
     private void EliminateCandidateWithLowestVotes()
     {
         var participatingCandidateCenters = 
-            candidateCenters.FindAll(center => center.isEliminated == false);
+            candidateCenters.FindAll(center => center.IsEliminated == false);
         
         // Find the candidate with the lowest amount of votes...
         var candidateWithLowestVotes = participatingCandidateCenters[0];
@@ -271,32 +271,32 @@ public class RankedChoicedVotingSimManager : MonoBehaviour
         {
             var candidate = participatingCandidateCenters[i];
             
-            if (candidate.votingCandidateCenter.assignedBuddies.Count < 
-                candidateWithLowestVotes.votingCandidateCenter.assignedBuddies.Count)
+            if (candidate.assignedBuddies.Count < 
+                candidateWithLowestVotes.assignedBuddies.Count)
             {
                 candidateWithLowestVotes = candidate;
             }
         }
-        candidateWithLowestVotes.isEliminated = true;
+        candidateWithLowestVotes.CandidateData.isEliminated = true;
 
         // prepare the list of remaining active candidates
         var activeCandidates = new List<VotingCandidateCenter>();
         foreach(var participatingCandidate in participatingCandidateCenters)
         {
-            if (!participatingCandidate.isEliminated)
+            if (!participatingCandidate.IsEliminated)
                 activeCandidates.Add(
-                    participatingCandidate.votingCandidateCenter);
+                    participatingCandidate);
         }
 
-        foreach(var votingBuddy in candidateWithLowestVotes.votingCandidateCenter.assignedBuddies)
+        foreach(var votingBuddy in candidateWithLowestVotes.assignedBuddies)
         {
             votingBuddy.Ballot.AdvanceToNextChoice(activeCandidates);
             votingBuddy.needsToMoveToNextCandidate = true;
         }
-        candidateWithLowestVotes.votingCandidateCenter.ClearAssignments();
+        candidateWithLowestVotes.ClearAssignments();
 
         var candidateName = 
-            candidateWithLowestVotes.votingCandidateCenter.CandidateData.candidateName;
+            candidateWithLowestVotes.CandidateData.candidateName;
 
         Debug.Log($"Candidate {candidateName} has been eliminated!");
     }

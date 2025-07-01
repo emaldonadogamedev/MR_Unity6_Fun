@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8915725689355588817}
   - component: {fileID: 5584527672653064268}
   - component: {fileID: 6129802369855844882}
+  - component: {fileID: 8923976068861460108}
   m_Layer: 0
   m_Name: VotingBuddy
   m_TagString: Untagged
@@ -104,3 +105,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VotingBuddyDataHolder
   m_Renderer: {fileID: 5584527672653064268}
   needsToMoveToNextCandidate: 1
+--- !u!136 &8923976068861460108
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3391838096324005847}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 1073742071
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.6
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.2, z: 0}
