@@ -3,7 +3,11 @@
     <ui:VisualElement name="MainContainer" style="flex-grow: 0;">
         <ui:VisualElement name="ChoiceControls" style="align-self: flex-end;">
             <ui:Label text="Vote count:" />
-            <ui:SliderInt low-value="50" high-value="1000" value="85" name="voteCountSlider" show-input-field="true" />
+            <ui:SliderInt low-value="50" high-value="1000" value="85" name="voteCountSlider" show-input-field="true">
+                <Bindings>
+                    <ui:DataBinding property="value" data-source-path="votingBuddyCoint" data-source-type="RankedChoicedVotingSimManager, Assembly-CSharp" binding-mode="TwoWay" />
+                </Bindings>
+            </ui:SliderInt>
             <ui:Button text="Add Voting Choice" name="addVotingChoice" />
             <ui:Button text="Start Simulation!" name="startSimulation" />
         </ui:VisualElement>
