@@ -6,13 +6,12 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
 {
     public enum SimulationState : byte
     { 
-        Idle,
         SettingUp,
         Running,
         DisplayingResults
     }
 
-    public SimulationState CurrentState { get; private set; } = SimulationState.Idle;
+    public SimulationState CurrentState { get; private set; } = SimulationState.SettingUp;
 
     [SerializeField]
     [Range(50, 1000)]
@@ -144,8 +143,10 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
             
             if (TryGetMajorityCandidate(out var winner))
             {
-                Debug.Log(
-                    $"Winner is {winner.CandidateData.candidateName} with {winner.VoteCount} votes!");
+                var winnerName = winner.CandidateData.candidateName;
+                int voteCount = winner.VoteCount;
+
+                Debug.Log($"Winner is {winnerName} with {voteCount} votes!");
 
                 winner.votingChoiceCenterVisuals.SetAsWinner();
 

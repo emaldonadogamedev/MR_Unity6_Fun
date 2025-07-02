@@ -1,0 +1,11 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UITK/MainMenuNonXR.uss?fileID=7433441132597879392&amp;guid=566b24012b122de4d8339e804e89c21d&amp;type=3#MainMenuNonXR" />
+    <ui:VisualElement name="MainContainer" style="flex-grow: 0;">
+        <ui:VisualElement name="ChoiceControls" style="align-self: flex-end;">
+            <ui:Label text="Vote count:" />
+            <ui:SliderInt low-value="50" high-value="1000" value="85" name="voteCountSlider" show-input-field="true" />
+            <ui:Button text="Add Voting Choice" name="addVotingChoice" />
+            <ui:Button text="Start Simulation!" name="startSimulation" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
