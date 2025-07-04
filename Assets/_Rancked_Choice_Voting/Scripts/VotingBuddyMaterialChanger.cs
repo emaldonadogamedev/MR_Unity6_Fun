@@ -12,7 +12,7 @@ static public class VotingBuddyMaterialChanger
 
         SetVotingBuddyMaterialHoppingValues(
             voterBuddyMaterial,
-            Random.Range(20f, 27f),
+            Random.Range(30f, 37f),
             Random.Range(-2f, 2f));
     }
 

@@ -23,7 +23,7 @@ public class VotingCandidateCenter : MonoBehaviour
 
     private float GetCurrentCandidatePercentage()
     {
-        int totalVotes = RankedChoicedVotingSimManager.Instance.VotingBuddyCoint;
+        int totalVotes = RankedChoicedVotingSimManager.Instance.VotingBuddyCount;
 
         float percentage = ((float)VoteCount / totalVotes);
 

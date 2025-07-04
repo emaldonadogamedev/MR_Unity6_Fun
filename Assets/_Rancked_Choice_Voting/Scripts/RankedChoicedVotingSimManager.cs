@@ -15,9 +15,9 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
 
     [SerializeField]
     [Range(50, 1000)]
-    private int votingBuddyCoint = 300;
+    private int votingBuddyCount = 300;
 
-    public int VotingBuddyCoint => votingBuddyCoint;
+    public int VotingBuddyCount => votingBuddyCount;
 
     static public readonly int MAX_VOTING_CHOICE_COUNT = 10;
 
@@ -39,6 +39,8 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
 
     private readonly List<VotingBuddyBallotHolder> activeVotingBuddies = new();
 
+    [SerializeField]
+    [HideInInspector]
     private int currentRoundNumber = 1;
 
     public void AddCandidateCenter(Vector3 position, CandidateData candidate)
@@ -109,7 +111,7 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
         List<VotingCandidateCenter> candidates;
 
         // allocate the necessary voting buddies
-        for (int i = 0; i < votingBuddyCoint; ++i)
+        for (int i = 0; i < votingBuddyCount; ++i)
         {
             // TODO: HORRIBLY INEFFICIENT!!, JUST FOR QUICK TEST!
             candidates = new();
@@ -122,7 +124,7 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
                 VotingBuddyDataGenerator.GetNewRandomVotingData(candidates);
 
             activeVotingBuddies.Add(votingBuddySpawner.SpawnVotingBuddy(
-                Vector3.zero,
+                Vector3.up,
                 newVotingBuddyData));
         }
     }
@@ -261,7 +263,7 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
 
     private bool TryGetMajorityCandidate(out VotingCandidateCenter votingCandidateCenter)
     {
-        int numberToBeat = votingBuddyCoint / 2;
+        int numberToBeat = votingBuddyCount / 2;
 
         votingCandidateCenter = null;
         

@@ -2,14 +2,26 @@
     <Style src="project://database/Assets/UITK/MainMenuNonXR.uss?fileID=7433441132597879392&amp;guid=566b24012b122de4d8339e804e89c21d&amp;type=3#MainMenuNonXR" />
     <ui:VisualElement name="MainContainer" style="flex-grow: 0;">
         <ui:VisualElement name="ChoiceControls" style="align-self: flex-end;">
-            <ui:Label text="Vote count:" />
+            <ui:Label text="Vote count:" name="voteCountLabel" style="font-size: 25px;" />
             <ui:SliderInt low-value="50" high-value="1000" value="85" name="voteCountSlider" show-input-field="true">
                 <Bindings>
                     <ui:DataBinding property="value" data-source-path="votingBuddyCoint" data-source-type="RankedChoicedVotingSimManager, Assembly-CSharp" binding-mode="TwoWay" />
                 </Bindings>
             </ui:SliderInt>
-            <ui:Button text="Add Voting Choice" name="addVotingChoice" />
-            <ui:Button text="Start Simulation!" name="startSimulation" />
+            <ui:Button text="Start Simulation!" name="startSimulation" style="font-size: 25px;" />
+            <ui:VisualElement name="RoundInformation" style="flex-grow: 1;">
+                <ui:VisualElement style="flex-grow: 1; flex-direction: row; font-size: 25px;">
+                    <ui:Label text="Round #" name="roundNumberTextLabel" style="font-size: 25px;" />
+                    <ui:Label name="roundNumberLabel">
+                        <Bindings>
+                            <ui:DataBinding property="text" data-source-path="currentRoundNumber" data-source-type="RankedChoicedVotingSimManager, Assembly-CSharp" binding-mode="ToTarget" />
+                        </Bindings>
+                    </ui:Label>
+                </ui:VisualElement>
+                <ui:VisualElement name="RoundResults" style="flex-grow: 1;">
+                    <ui:ListView />
+                </ui:VisualElement>
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -51,7 +51,7 @@ public class VotingChoiceCenterVisuals : MonoBehaviour
 
     private void UpdateVoteTexbox()
     {
-        int totalVotes = RankedChoicedVotingSimManager.Instance.VotingBuddyCoint;
+        int totalVotes = RankedChoicedVotingSimManager.Instance.VotingBuddyCount;
 
         float percentage = ((float)voteCount / totalVotes);
 

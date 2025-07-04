@@ -15,5 +15,5 @@
     align-self: flex-start;
     align-content: flex-start;
     align-items: stretch;
-    min-width: 270px;
+    min-width: 350px;
 }
