@@ -44,7 +44,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.8.21",
+      "version": "1.8.23",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -127,7 +127,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.learn.iet-framework": {
-      "version": "4.2.0-pre.2",
+      "version": "4.2.0-pre.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {

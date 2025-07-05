@@ -229,8 +229,11 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
                         !center.IsEliminated &&
                         currCandidateData == center);
 
-                nextDestination =
-                    nextCandidateCenter.GetRandomPositionForVotingBuddy();
+                var randomPosition = nextCandidateCenter.GetRandomPositionForVotingBuddy();
+                
+                nextDestination.x = randomPosition.x;
+                nextDestination.y = votingBuddy.transform.position.y;
+                nextDestination.z = randomPosition.z;
             }
 
             var newMovementTask = votingBuddyMover.CreateMovementTask(
