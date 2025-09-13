@@ -560,6 +560,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   features:
   - {fileID: 6694308720589997164}
+  - {fileID: 8841802579656557816}
   - {fileID: 6648505377724993528}
   - {fileID: 1697238671499355758}
   - {fileID: -2262522482964328841}
@@ -1684,3 +1685,24 @@ MonoBehaviour:
   company: Unity Technologies
   priority: 2147483647
   required: 0
+--- !u!114 &8841802579656557816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01512f11fe5096443ad972feb69271f6, type: 3}
+  m_Name: SpaceWarpFeature Android
+  m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.Features.SpaceWarpFeature
+  m_enabled: 0
+  nameUi: Application SpaceWarp
+  version: 1.0.0
+  featureIdInternal: com.unity.openxr.feature.spacewarp
+  openxrExtensionStrings: XR_FB_space_warp
+  company: Unity
+  priority: 0
+  required: 0
+  m_UseRightHandedNDC: 0
