@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-static public class VotingBuddyDataGenerator
+public static class VotingBuddyDataGenerator
 {
     public static VotingBuddyBallot GetNewRandomVotingData(List<VotingCandidateCenter> candidates)
     {

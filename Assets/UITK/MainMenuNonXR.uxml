@@ -3,7 +3,7 @@
     <ui:VisualElement name="MainContainer" style="flex-grow: 0;">
         <ui:VisualElement name="ChoiceControls" style="align-self: flex-end;">
             <ui:Label text="Vote count:" name="voteCountLabel" style="font-size: 25px;" />
-            <ui:SliderInt low-value="50" high-value="1000" value="500" name="voteCountSlider" show-input-field="true">
+            <ui:SliderInt low-value="50" high-value="5000" value="500" name="voteCountSlider" show-input-field="true" fill="true" inverted="false">
                 <Bindings>
                     <ui:DataBinding property="value" data-source-path="votingBuddyCount" data-source-type="RankedChoicedVotingSimManager, Assembly-CSharp" binding-mode="TwoWay" update-trigger="OnSourceChanged" />
                 </Bindings>

@@ -44,7 +44,7 @@ public class VotingBuddyMover : MonoBehaviour
         return newMovementTask;
     }
 
-    void Update()
+    private void Update()
     {
         for (int i = 0; i < movements.Count; i++)
         {
@@ -85,13 +85,11 @@ public class VotingBuddyMover : MonoBehaviour
         movementTask.startDelay -= Time.deltaTime;
         if (movementTask.startDelay > 0f)
             return;
-        else
-        {
-            movementTask.startDelay = 0f;
-            movementTask.OnMovementTaskBegun.Invoke(movementTask.buddy);
-            movementTask.OnMovementTaskBegun.RemoveAllListeners();
-            movementTask.isDelayDone = true;
-        }
+
+        movementTask.startDelay = 0f;
+        movementTask.OnMovementTaskBegun.Invoke(movementTask.buddy);
+        movementTask.OnMovementTaskBegun.RemoveAllListeners();
+        movementTask.isDelayDone = true;
     }
 
     public bool AllArrived()

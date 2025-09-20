@@ -8,7 +8,7 @@ public class VotingBuddySpawner : MonoBehaviour
 
     private ObjectPool<GameObject> votingBuddyPool;
 
-    static private readonly int MAX_VOTING_BUDDY_COUNT = 1000;
+    static private readonly int MAX_VOTING_BUDDY_COUNT = 5000;
 
     private void Awake()
     {

@@ -511,7 +511,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2651175163528772328, guid: 517d7114055fc6147b440d6df0ee9f20, type: 3}
       propertyPath: votingBuddyCount
-      value: 892
+      value: 3300
       objectReference: {fileID: 0}
     - target: {fileID: 3484256535652587076, guid: 517d7114055fc6147b440d6df0ee9f20, type: 3}
       propertyPath: m_Name

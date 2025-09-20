@@ -14,7 +14,7 @@ public class RankedChoicedVotingSimManager : Singleton<RankedChoicedVotingSimMan
     public SimulationState CurrentState { get; private set; } = SimulationState.SettingUp;
 
     [SerializeField]
-    [Range(50, 1000)]
+    [Range(50, 5000)]
     private int votingBuddyCount = 300;
 
     public int VotingBuddyCount => votingBuddyCount;
